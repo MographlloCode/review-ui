@@ -12,11 +12,11 @@ export default async function Home() {
     <>
       <Sidebar />
       <ContentWrapper>
-        <div className='w-full flex flex-col items-center gap-4 p-4 border-b border-gray-300/50 max-h-full h-auto'>
+        <div className='max-w-full w-full flex flex-col items-center gap-4 p-4 border-b border-gray-300/50 max-h-full h-auto'>
           <span className='self-start font-semibold'>
             <AnimatedText text='Review Status' lgSize />
           </span>
-          <div className='w-full grow flex items-start overflow-hidden'>
+          <div className='max-w-full w-full grow flex items-start overflow-hidden'>
             <DataTable
               columns={columns}
               data={data}

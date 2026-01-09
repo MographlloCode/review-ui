@@ -42,12 +42,12 @@ export const applicationColumns: ColumnDef<Application>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    size: 150,
+    size: 80,
   },
   {
     accessorKey: 'application',
     header: 'Application',
-    size: 120,
+    size: 225,
     cell: ({ row }) => (
       <span className='font-medium'>{row.original.application}</span>
     ),
@@ -55,15 +55,7 @@ export const applicationColumns: ColumnDef<Application>[] = [
   {
     accessorKey: 'datasource',
     header: 'Datasource',
-    size: 150,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    size: 150,
-    cell: ({ row }) => (
-      <span className='font-medium'>{row.original.datasource}</span>
-    ),
+    size: 225,
   },
   {
     accessorKey: 'lastScanDate',
@@ -75,18 +67,24 @@ export const applicationColumns: ColumnDef<Application>[] = [
   },
   {
     id: 'dataOwners',
+    accessorFn: (row) => row.dataOwners?.join(' ') || '',
     header: 'Data Owners',
-    size: 150,
+    size: 250, // Aumentei um pouco pois nomes/emails costumam ser longos
     cell: ({ row }) => {
       return (
-        <div className='flex gap-2'>
+        <div className='flex gap-2 w-full justify-between items-center'>
+          {' '}
+          {/* Melhorei o layout interno */}
           <span className='font-medium'>{assemblyDataOwnerCell(row)}</span>
-          <button className='text-blue-600 hover:bg-blue-50 p-1 rounded'>
-            <LuPencil size={16} />
-          </button>
-          <button className='text-red-600 hover:bg-red-50 p-1 rounded'>
-            <LuTrash2 size={16} />
-          </button>
+          {/* Botões alinhados à direita */}
+          <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
+            <button className='text-blue-600 hover:bg-blue-50 p-1 rounded'>
+              <LuPencil size={16} />
+            </button>
+            <button className='text-red-600 hover:bg-red-50 p-1 rounded'>
+              <LuTrash2 size={16} />
+            </button>
+          </div>
         </div>
       )
     },
@@ -102,7 +100,7 @@ export const applicationColumns: ColumnDef<Application>[] = [
   {
     accessorKey: 'haveChangeRequest',
     header: 'Have Change Request',
-    size: 150,
+    size: 200,
     cell: ({ row }) => (
       <span className='font-medium'>{row.original.haveChangeRequest}</span>
     ),

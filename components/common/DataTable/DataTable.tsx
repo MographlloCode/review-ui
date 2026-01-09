@@ -25,10 +25,9 @@ interface DataTableProps<TData, TValue> {
 export function DataTable<TData, TValue>({
   columns,
   data,
-  estimateRowHeight = 50, // Altura um pouco maior para acomodar botões
+  estimateRowHeight = 50,
   className = 'h-full',
 }: DataTableProps<TData, TValue>) {
-  // --- ESTADOS DA TABELA ---
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
@@ -36,24 +35,16 @@ export function DataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    state: {
-      sorting,
-      columnFilters,
-      globalFilter,
-    },
-    // Pipelines de processamento
+    state: { sorting, columnFilters, globalFilter },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(), // Necessário para filtros funcionarem
+    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
   })
 
-  // --- VIRTUALIZAÇÃO ---
   const tableContainerRef = useRef<HTMLDivElement>(null)
-
-  // Importante: Pegamos as linhas DO MODELO (que já estão filtradas e ordenadas)
   const { rows } = table.getRowModel()
 
   const rowVirtualizer = useVirtualizer({
@@ -64,40 +55,44 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className='flex flex-col gap-4 w-full max-h-full'>
-      {/* 1. FILTRO GLOBAL */}
-      <div className='relative max-w-sm'>
+    <div className='flex flex-col gap-4 w-full h-full'>
+      {/* 1. FILTRO GLOBAL (Mantido igual) */}
+      <div className='relative max-w-sm flex-shrink-0'>
         <LuSearch className='absolute left-2 top-2.5 h-4 w-4 text-gray-500' />
         <input
           value={globalFilter ?? ''}
           onChange={(e) => setGlobalFilter(e.target.value)}
           placeholder='Pesquisar em tudo...'
-          className='pl-8 h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          className='pl-8 h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
       </div>
 
-      {/* 2. CONTAINER DA TABELA (SCROLL) */}
+      {/* 2. CONTAINER DA TABELA */}
       <div
         ref={tableContainerRef}
-        className={`relative overflow-auto border rounded-md bg-white ${className} h-full w-full`}
+        className={`relative overflow-auto border rounded-md bg-white w-full ${className}`}
       >
-        <table className='w-full text-sm text-left'>
-          <thead className='bg-gray-100 text-gray-700 sticky top-0 z-10 shadow-sm'>
+        {/* Usamos w-full e grid para forçar comportamento de bloco */}
+        <table className='min-w-full w-fit grid'>
+          {/* HEADER */}
+          <thead className='bg-gray-100 text-gray-700 sticky top-0 z-10 shadow-sm grid w-full'>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr key={headerGroup.id} className='flex w-full border-b'>
                 {headerGroup.headers.map((header) => {
                   return (
                     <th
                       key={header.id}
-                      colSpan={header.colSpan}
-                      className='p-4 font-semibold align-top border-b'
-                      style={{ width: header.getSize() }}
+                      className='p-4 font-semibold text-left flex items-start' // flex items-start garante alinhamento
+                      style={{
+                        minWidth: header.getSize(),
+                        flex: 1,
+                      }} // Largura fixa vinda da definição
                     >
                       {header.isPlaceholder ? null : (
-                        <div className='flex flex-col gap-2'>
-                          {/* Cabeçalho Clicável para Ordenação */}
+                        <div className='flex flex-col gap-2 w-full'>
+                          {/* Cabeçalho Clicável */}
                           <div
-                            className={`flex items-center gap-2 cursor-pointer select-none hover:text-blue-600 ${
+                            className={`flex items-center gap-2 cursor-pointer select-none text-sm hover:text-blue-600 ${
                               header.column.getCanSort() ? '' : 'cursor-default'
                             }`}
                             onClick={header.column.getToggleSortingHandler()}
@@ -107,7 +102,7 @@ export function DataTable<TData, TValue>({
                               header.getContext(),
                             )}
                             {header.column.getCanSort() && (
-                              <LuArrowUpDown className='h-3 w-3' />
+                              <LuArrowUpDown className='h-3 w-3 flex-shrink-0' />
                             )}
                             {{
                               asc: ' 🔼',
@@ -115,7 +110,7 @@ export function DataTable<TData, TValue>({
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
 
-                          {/* 3. FILTRO POR COLUNA */}
+                          {/* Filtro */}
                           {header.column.getCanFilter() ? (
                             <input
                               type='text'
@@ -125,9 +120,8 @@ export function DataTable<TData, TValue>({
                               onChange={(e) =>
                                 header.column.setFilterValue(e.target.value)
                               }
-                              placeholder={`Filtrar...`}
+                              placeholder='Filtrar...'
                               className='w-full text-xs font-normal border rounded px-2 py-1 focus:outline-blue-500'
-                              // Importante: Impede que o clique no input dispare a ordenação
                               onClick={(e) => e.stopPropagation()}
                             />
                           ) : null}
@@ -140,8 +134,9 @@ export function DataTable<TData, TValue>({
             ))}
           </thead>
 
+          {/* BODY VIRTUALIZADO */}
           <tbody
-            className='relative'
+            className='relative grid w-full'
             style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -151,6 +146,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-index={virtualRow.index}
                   ref={rowVirtualizer.measureElement}
+                  // O segredo é usar 'flex' aqui também para imitar o header
                   className='absolute top-0 left-0 w-full flex items-center border-b hover:bg-gray-50 transition-colors'
                   style={{
                     height: `${virtualRow.size}px`,
@@ -160,13 +156,18 @@ export function DataTable<TData, TValue>({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className='px-4 py-2 flex items-center truncate'
-                      style={{ width: cell.column.getSize() }}
+                      className='px-4 py-2 flex items-center' // Flex para centralizar verticalmente o conteúdo
+                      style={{
+                        minWidth: cell.column.getSize(),
+                        flex: 1,
+                      }} // Mesma largura do Header
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      <div className='truncate w-full'>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </div>
                     </td>
                   ))}
                 </tr>
@@ -174,7 +175,7 @@ export function DataTable<TData, TValue>({
             })}
 
             {rows.length === 0 && (
-              <tr className='absolute w-full p-4 text-center text-gray-500'>
+              <tr className='absolute w-full p-4 flex justify-center text-gray-500'>
                 <td>Nenhum resultado encontrado.</td>
               </tr>
             )}
