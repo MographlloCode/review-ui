@@ -2,7 +2,8 @@
 
 import React from 'react'
 import { Table } from '@tanstack/react-table'
-import { LuFilter } from 'react-icons/lu'
+import { LuCheckCheck, LuFilter } from 'react-icons/lu'
+import { capitalizeFirstLetter } from '../../utils'
 
 interface TableFooterProps<TData> {
   table: Table<TData>
@@ -16,29 +17,46 @@ export function TableFooter<TData>({
   children,
 }: TableFooterProps<TData>) {
   const columnFilters = table.getState().columnFilters
+  const selectedRowsCount = Object.keys(table.getState().rowSelection).length
 
   return (
-    <div className='flex flex-wrap items-center gap-4 text-sm w-full justify-between'>
-      <div className='flex items-center gap-8'>
-        <div className='flex gap-2 items-center flex-nowrap'>
+    <div className='flex items-center gap-4 text-xs w-full justify-between md:flex-nowrap flex-wrap'>
+      <div className='flex items-center gap-4'>
+        <div className='flex text-gray-700 items-center gap-1'>
+          <LuCheckCheck size={14} />
+          <span className='bg-gray-50 text-nowrap'>
+            <span className='font-semibold'>Selected Rows:</span>{' '}
+            {selectedRowsCount === 0 ? (
+              <span className='text-gray-400 italic'>None</span>
+            ) : (
+              selectedRowsCount
+            )}
+          </span>
+        </div>
+        <div className='flex flex-wrap md:flex-nowrap max-w-96 gap-1'>
           <span className='font-semibold flex items-center gap-1 text-gray-700 text-nowrap'>
             <LuFilter size={14} /> Applied Filters:
           </span>
           {columnFilters.length === 0 && (
             <span className='text-gray-400 italic'>None</span>
           )}
-          {columnFilters.map((filter) => (
-            <span
-              key={filter.id}
-              className='bg-white border border-gray-200 px-2 py-1 rounded text-xs font-medium shadow-sm flex items-center gap-1'
-            >
-              <span className='text-gray-500'>{filter.id}:</span>
-              <span className='text-blue-600'>{filter.value as string}</span>
-            </span>
-          ))}
+          <div className='flex items-center gap-1'>
+            {columnFilters.map((filter, index) => (
+              <span
+                key={filter.id}
+                className=' text-xs font-medium flex items-center gap-1 text-gray-700'
+              >
+                {capitalizeFirstLetter(filter.id)}
+                {index < columnFilters.length - 1 && (
+                  <span className='text-gray-400'>/</span>
+                )}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className='font-medium whitespace-nowrap text-gray-600'>
-          Total Rows: <span>{rowCount}</span>
+        <div className='flex items-center font-medium whitespace-nowrap text-gray-600 gap-1'>
+          <span className='font-semibold'>Total Rows:</span>
+          <span>{rowCount}</span>
         </div>
       </div>
       {children}

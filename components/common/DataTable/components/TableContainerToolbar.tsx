@@ -10,12 +10,9 @@ interface TableContainerToolbarProps<TData> {
 }
 
 export function TableContainerToolbar<TData>({
-  table,
   globalFilter,
   setGlobalFilter,
 }: TableContainerToolbarProps<TData>) {
-  const selectedRowsCount = Object.keys(table.getState().rowSelection).length
-
   return (
     <div className='flex justify-between items-center shrink-0 gap-4'>
       <div className='flex items-center gap-4 max-w-96'>
@@ -29,15 +26,6 @@ export function TableContainerToolbar<TData>({
                       placeholder:text-gray-400 focus:outline-none focus:ring-2 
                       focus:ring-blue-500 focus:border-transparent transition-all shadow-sm'
           />
-        </div>
-        <div className='flex items-center gap-3'>
-          {selectedRowsCount > 0 && (
-            <div className='items-center animate-in fade-in slide-in-from-right-2'>
-              <span className='text-sm text-blue-600 font-semibold bg-gray-50 px-3 py-1.5 rounded-full border border-blue-100 shadow-sm text-nowrap'>
-                {selectedRowsCount} Selected
-              </span>
-            </div>
-          )}
         </div>
       </div>
     </div>

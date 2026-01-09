@@ -23,3 +23,10 @@ export const getColumnStyles = (
     borderRight: '1px solid #f3f4f6',
   }
 }
+
+export const capitalizeFirstLetter = (str: string) => {
+  if (str.length === 0) {
+    return str
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

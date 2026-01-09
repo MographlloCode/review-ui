@@ -38,7 +38,7 @@ export function TableFooterActions<TData>({
 
   return (
     <>
-      <div className='flex items-center gap-4'>
+      <div className='flex items-center text-xs w-full md:justify-center justify-start'>
         <div className='flex items-center gap-1'>
           <button
             className='p-2 rounded hover:bg-gray-200 disabled:opacity-30 disabled:hover:bg-transparent transition-colors'
@@ -63,7 +63,7 @@ export function TableFooterActions<TData>({
               <button
                 key={pageNumber}
                 onClick={() => table.setPageIndex(pageNumber - 1)}
-                className={`w-8 h-8 flex items-center justify-center rounded text-sm font-medium transition-all ${
+                className={`w-8 h-8 flex items-center justify-center rounded  font-medium transition-all ${
                   pageNumber === table.getState().pagination.pageIndex + 1
                     ? 'bg-blue-600 text-white shadow-sm'
                     : 'bg-white border border-gray-200 hover:bg-gray-100 text-gray-700'
@@ -92,19 +92,19 @@ export function TableFooterActions<TData>({
             <LuChevronsRight size={18} />
           </button>
         </div>
-        <div className='text-sm text-gray-500 font-medium min-w-25 text-right'>
+        <div className=' text-gray-500 font-medium min-w-25 text-right'>
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </div>
       </div>
       <div className='flex items-center gap-2'>
-        <span className='text-sm text-gray-600'>Rows per page:</span>
+        <span className='text-nowrap text-gray-600'>Rows per page:</span>
         <select
           value={table.getState().pagination.pageSize}
           onChange={(e) => {
             table.setPageSize(Number(e.target.value))
           }}
-          className='border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-blue-500 cursor-pointer hover:border-gray-400 transition-colors'
+          className='border border-gray-300 rounded px-2 py-1  bg-white focus:outline-blue-500 cursor-pointer hover:border-gray-400 transition-colors'
         >
           {[100, 200, 500, 1000, 10000].map((pageSize) => (
             <option key={pageSize} value={pageSize}>
