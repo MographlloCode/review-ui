@@ -1,6 +1,7 @@
 'use client'
 
 import { Header, Table } from '@tanstack/react-table'
+import { TableColumnFilterCombo } from './TableColumFilterCombo'
 import { LuArrowUpDown, LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 
 interface TableHeaderActionsProps<TData, TValue> {
@@ -74,13 +75,20 @@ export function TableHeaderActions<TData, TValue>({
 
       {!isCollapsed && column.getCanFilter() && (
         <div className='relative animate-in fade-in duration-500'>
-          <input
-            type='text'
-            value={(column.getFilterValue() as string) ?? ''}
-            onChange={(e) => column.setFilterValue(e.target.value)}
-            placeholder='Filter...'
-            className='w-full h-8 text-xs border border-gray-200 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none font-normal'
-          />
+          {column.id === 'haveChangeRequest' ? (
+            <TableColumnFilterCombo
+              column={column}
+              options={['CR Reviewed', 'Pending Review']}
+            />
+          ) : (
+            <input
+              type='text'
+              value={(column.getFilterValue() as string) ?? ''}
+              onChange={(e) => column.setFilterValue(e.target.value)}
+              placeholder='Filter...'
+              className='w-full h-8 text-xs border border-gray-200 rounded px-2 py-1 focus:ring-1 focus:ring-blue-500 outline-none font-normal'
+            />
+          )}
         </div>
       )}
     </div>
