@@ -4,6 +4,7 @@
 import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
 import { Application } from '@/types/application'
 import { LuPencil, LuTrash2 } from 'react-icons/lu'
+import React from 'react'
 
 const assemblyDataOwnerCell = (row: Row<Application>) => {
   const owners = row.original.dataOwners || []
@@ -38,6 +39,32 @@ const assemblyDataOwnerCell = (row: Row<Application>) => {
   )
 }
 
+function IndeterminateCheckbox({
+  indeterminate,
+  className = '',
+  ...rest
+}: { indeterminate?: boolean } & React.HTMLProps<HTMLInputElement>) {
+  const ref = React.useRef<HTMLInputElement>(null!)
+
+  React.useEffect(() => {
+    if (typeof indeterminate === 'boolean') {
+      ref.current.indeterminate = !rest.checked && indeterminate
+    }
+  }, [ref, indeterminate, rest.checked])
+
+  return (
+    <input
+      type='checkbox'
+      ref={ref}
+      className={
+        className +
+        ' cursor-pointer rounded border-gray-300 text-blue-600 focus:ring-blue-500'
+      }
+      {...rest}
+    />
+  )
+}
+
 const numberEqualsFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
   const rowValue: number = row.getValue(columnId)
   // Ensure both are treated as strings for simple comparison, or handle number comparison explicitly
@@ -45,6 +72,33 @@ const numberEqualsFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
 }
 
 export const applicationColumns: ColumnDef<Application>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <div className='px-1'>
+        <IndeterminateCheckbox
+          {...{
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onChange: table.getToggleAllRowsSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+    cell: ({ row }) => (
+      <div className='px-1'>
+        <IndeterminateCheckbox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+    size: 40,
+  },
   {
     accessorKey: 'application',
     header: 'Application',
