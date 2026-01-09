@@ -15,14 +15,14 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { LuArrowUpDown, LuSearch } from 'react-icons/lu'
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends { id: string | number }, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   estimateRowHeight?: number
   className?: string
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string | number }, TValue>({
   columns,
   data,
   estimateRowHeight = 50,
@@ -36,6 +36,7 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     state: { sorting, columnFilters, globalFilter },
+    getRowId: (row) => row.id.toString(),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -144,6 +145,8 @@ export function DataTable<TData, TValue>({
               return (
                 <tr
                   key={row.id}
+                  id={row.id}
+                  data-row-id={row.original.id}
                   data-index={virtualRow.index}
                   ref={rowVirtualizer.measureElement}
                   // O segredo é usar 'flex' aqui também para imitar o header

@@ -1,7 +1,7 @@
 // app/_table/application/columns.tsx
 'use client'
 
-import { ColumnDef, Row } from '@tanstack/react-table'
+import { ColumnDef, FilterFn, Row } from '@tanstack/react-table'
 import { Application } from '@/types/application'
 import { LuPencil, LuTrash2 } from 'react-icons/lu'
 
@@ -38,12 +38,13 @@ const assemblyDataOwnerCell = (row: Row<Application>) => {
   )
 }
 
+const numberEqualsFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
+  const rowValue: number = row.getValue(columnId)
+  // Ensure both are treated as strings for simple comparison, or handle number comparison explicitly
+  return rowValue.toString() === filterValue.toString()
+}
+
 export const applicationColumns: ColumnDef<Application>[] = [
-  {
-    accessorKey: 'id',
-    header: 'ID',
-    size: 80,
-  },
   {
     accessorKey: 'application',
     header: 'Application',
@@ -96,6 +97,7 @@ export const applicationColumns: ColumnDef<Application>[] = [
     cell: ({ row }) => (
       <span className='font-medium'>{row.original.curationRate}%</span>
     ),
+    filterFn: numberEqualsFilterFn,
   },
   {
     accessorKey: 'haveChangeRequest',
