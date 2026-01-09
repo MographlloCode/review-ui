@@ -133,6 +133,9 @@ export function useDataTable<TData extends { id: string | number }, TValue>({
     })
   }
 
+  const [showFilters, setShowFilters] = useState(false)
+  const toggleAllFilters = () => setShowFilters((prev) => !prev)
+
   return {
     table,
     globalFilter,
@@ -140,5 +143,7 @@ export function useDataTable<TData extends { id: string | number }, TValue>({
     collapsedColumns,
     setGlobalFilter,
     toggleColumn,
+    showFilters, // Novo
+    toggleAllFilters,
   }
 }

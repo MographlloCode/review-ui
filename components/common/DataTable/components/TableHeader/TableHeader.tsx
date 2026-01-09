@@ -8,12 +8,16 @@ interface TableHeaderProps<TData> {
   table: Table<TData>
   collapsedColumns: Record<string, boolean>
   toggleColumn: (id: string) => void
+  showFilters: boolean
+  toggleAllFilters: () => void
 }
 
 export function TableHeader<TData>({
   table,
   collapsedColumns,
+  showFilters,
   toggleColumn,
+  toggleAllFilters,
 }: TableHeaderProps<TData>) {
   return (
     <thead className='bg-gray-100 text-gray-700 sticky top-0 z-10 shadow-sm grid w-full'>
@@ -48,6 +52,8 @@ export function TableHeader<TData>({
                         table={table}
                         isCollapsed={isCollapsed}
                         onToggle={toggleColumn}
+                        showFilters={showFilters}
+                        toggleAllFilters={toggleAllFilters}
                       />
                     )}
                   </div>

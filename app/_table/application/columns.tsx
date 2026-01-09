@@ -144,7 +144,11 @@ export const applicationColumns: ColumnDef<Application>[] = [
           <span className='font-medium'>{assemblyDataOwnerCell(row)}</span>
           <div className='flex gap-1'>
             <Button>
-              <Icon icon={LuPencil} size={14} />
+              <Icon
+                icon={LuPencil}
+                size={14}
+                className='text-gray-400 hover:text-blue-600 transition-all ease-in-out duration-100'
+              />
             </Button>
           </div>
         </div>

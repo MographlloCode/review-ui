@@ -22,7 +22,9 @@ export default async function Home(props: {
           <div className='flex flex-col h-full'>
             <div className='w-full flex items-center gap-4 p-4 border-b border-gray-300/50 bg-white/50 backdrop-blur-sm'>
               <span className='font-semibold'>
-                <AnimatedText text='Review Status' lgSize />
+                <h1 className='text-lg font-semibold text-gray-800'>
+                  Review Status
+                </h1>
               </span>
             </div>
 

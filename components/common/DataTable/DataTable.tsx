@@ -32,6 +32,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
     setGlobalFilter,
     collapsedColumns,
     toggleColumn,
+    showFilters,
+    toggleAllFilters,
   } = useDataTable({
     columns,
     data,
@@ -52,6 +54,8 @@ export function DataTable<TData extends { id: string | number }, TValue>({
             table={table}
             collapsedColumns={collapsedColumns}
             toggleColumn={toggleColumn}
+            showFilters={showFilters}
+            toggleAllFilters={toggleAllFilters}
           />
 
           <TableBody
