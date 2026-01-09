@@ -18,17 +18,15 @@ export function TableFooter<TData>({
   const columnFilters = table.getState().columnFilters
 
   return (
-    <div className='border border-t-0 rounded-b-md bg-gray-50 p-4 flex flex-col gap-4'>
-      <div className='flex justify-between items-center text-sm text-gray-600 border-b pb-4'>
-        <div className='flex gap-2 items-center flex-wrap'>
-          <span className='font-semibold flex items-center gap-1 text-gray-700'>
+    <div className='flex flex-wrap items-center gap-4 text-sm w-full justify-between'>
+      <div className='flex items-center gap-8'>
+        <div className='flex gap-2 items-center flex-nowrap'>
+          <span className='font-semibold flex items-center gap-1 text-gray-700 text-nowrap'>
             <LuFilter size={14} /> Applied Filters:
           </span>
-
           {columnFilters.length === 0 && (
             <span className='text-gray-400 italic'>None</span>
           )}
-
           {columnFilters.map((filter) => (
             <span
               key={filter.id}
@@ -39,13 +37,11 @@ export function TableFooter<TData>({
             </span>
           ))}
         </div>
-
-        <div className='font-medium whitespace-nowrap'>
-          Total Rows: <span className='text-black'>{rowCount}</span>
+        <div className='font-medium whitespace-nowrap text-gray-600'>
+          Total Rows: <span>{rowCount}</span>
         </div>
       </div>
-
-      <div className='w-full'>{children}</div>
+      {children}
     </div>
   )
 }

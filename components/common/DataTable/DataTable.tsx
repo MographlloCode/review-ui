@@ -3,7 +3,6 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { useDataTable } from './hooks/useDataTable'
-
 import { TableContainerToolbar } from './components/TableContainerToolbar'
 import { TableHeader } from './components/TableHeader/TableHeader'
 import { TableBody } from './components/TableBody'
@@ -27,7 +26,13 @@ export function DataTable<TData extends { id: string | number }, TValue>({
   estimateRowHeight = 50,
   className = '',
 }: DataTableProps<TData, TValue>) {
-  const { table, globalFilter, setGlobalFilter } = useDataTable({
+  const {
+    table,
+    globalFilter,
+    setGlobalFilter,
+    collapsedColumns,
+    toggleColumn,
+  } = useDataTable({
     columns,
     data,
     pageCount,
@@ -41,10 +46,19 @@ export function DataTable<TData extends { id: string | number }, TValue>({
         setGlobalFilter={setGlobalFilter}
       />
 
-      <div className='relative flex-1 overflow-auto border rounded-t-md bg-white shadow-sm'>
+      <div className='relative flex-1 overflow-auto border border-gray-200 rounded-xl bg-white shadow-sm'>
         <table className='min-w-full w-fit grid'>
-          <TableHeader table={table} />
-          <TableBody table={table} estimateRowHeight={estimateRowHeight} />
+          <TableHeader
+            table={table}
+            collapsedColumns={collapsedColumns}
+            toggleColumn={toggleColumn}
+          />
+
+          <TableBody
+            table={table}
+            estimateRowHeight={estimateRowHeight}
+            collapsedColumns={collapsedColumns}
+          />
         </table>
       </div>
 

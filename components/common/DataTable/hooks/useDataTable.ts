@@ -103,10 +103,42 @@ export function useDataTable<TData extends { id: string | number }, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
   })
 
+  const [collapsedColumns, setCollapsedColumns] = useState<
+    Record<string, boolean>
+  >({})
+
+  const toggleColumn = (columnId: string) => {
+    setCollapsedColumns((prev) => {
+      const newState = { ...prev }
+
+      if (newState[columnId]) {
+        delete newState[columnId]
+      } else {
+        newState[columnId] = true
+      }
+
+      const allToggleableColumns = table
+        .getAllLeafColumns()
+        .filter((col) => col.id !== 'select')
+
+      const collapsedCount = allToggleableColumns.filter(
+        (col) => newState[col.id],
+      ).length
+
+      if (collapsedCount === allToggleableColumns.length) {
+        return {}
+      }
+
+      return newState
+    })
+  }
+
   return {
     table,
     globalFilter,
-    setGlobalFilter,
     columnFilters,
+    collapsedColumns,
+    setGlobalFilter,
+    toggleColumn,
   }
 }

@@ -3,18 +3,20 @@
 import { useRef } from 'react'
 import { flexRender, Table } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { getColumnStyles } from '../utils'
 
 interface TableBodyProps<TData> {
   table: Table<TData>
   estimateRowHeight?: number
+  collapsedColumns: Record<string, boolean>
 }
 
 export function TableBody<TData extends { id: string | number }>({
   table,
   estimateRowHeight = 50,
+  collapsedColumns,
 }: TableBodyProps<TData>) {
   const tableContainerRef = useRef<HTMLTableSectionElement>(null)
-
   const { rows } = table.getRowModel()
 
   const rowVirtualizer = useVirtualizer({
@@ -24,13 +26,6 @@ export function TableBody<TData extends { id: string | number }>({
     estimateSize: () => estimateRowHeight,
     overscan: 10,
   })
-
-  const getColumnStyle = (columnId: string, size: number) => {
-    if (columnId === 'select') {
-      return { width: size, flex: '0 0 auto' }
-    }
-    return { minWidth: size, flex: 1 }
-  }
 
   return (
     <tbody
@@ -47,7 +42,7 @@ export function TableBody<TData extends { id: string | number }>({
             key={row.id}
             data-index={virtualRow.index}
             ref={rowVirtualizer.measureElement}
-            className={`absolute top-0 left-0 w-full flex items-center border-b hover:bg-gray-50 transition-colors ${
+            className={`absolute top-0 left-0 w-full flex items-center border-b border-gray-100 hover:bg-gray-50 transition-colors duration-300 ${
               row.getIsSelected() ? 'bg-blue-50 hover:bg-blue-100' : ''
             }`}
             style={{
@@ -55,17 +50,34 @@ export function TableBody<TData extends { id: string | number }>({
               transform: `translateY(${virtualRow.start}px)`,
             }}
           >
-            {row.getVisibleCells().map((cell) => (
-              <td
-                key={cell.id}
-                className='px-4 py-2 flex items-center h-full'
-                style={getColumnStyle(cell.column.id, cell.column.getSize())}
-              >
-                <div className='truncate w-full text-sm text-gray-700'>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </div>
-              </td>
-            ))}
+            {row.getVisibleCells().map((cell) => {
+              const isCollapsed = collapsedColumns[cell.column.id]
+
+              return (
+                <td
+                  key={cell.id}
+                  style={getColumnStyles(
+                    cell.column.id,
+                    cell.column.getSize(),
+                    isCollapsed,
+                  )}
+                  className={`px-4 py-2 flex items-center transition-all duration-300 h-full border-r border-gray-100 ${
+                    isCollapsed ? 'bg-gray-50/30 justify-center' : ''
+                  }`}
+                >
+                  {!isCollapsed ? (
+                    <div className='truncate w-full text-sm text-gray-700'>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </div>
+                  ) : (
+                    <div className='w-px h-full bg-gray-200' />
+                  )}
+                </td>
+              )
+            })}
           </tr>
         )
       })}
