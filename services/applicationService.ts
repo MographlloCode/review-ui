@@ -1,10 +1,9 @@
 // services/applicationService.ts
 import { Application } from '@/types/application'
-import { PaginatedResponse, SearchParams } from '@/types/api' // Ajuste o import
+import { PaginatedResponse, SearchParams } from '@/types/api'
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
-// Gerador Determinístico (O mesmo que já fizemos)
 const generateAllData = (): Application[] => {
   return Array.from({ length: 2000 }, (_, i) => {
     const baseDate = new Date('2024-05-10T10:00:00Z')
@@ -22,17 +21,15 @@ const generateAllData = (): Application[] => {
   })
 }
 
-// Essa função simula o Controller do Backend
 export async function getApplications(
   params: SearchParams,
 ): Promise<PaginatedResponse<Application>> {
-  await delay(300) // Simula latência de rede realista
+  await delay(300)
 
-  // 1. Gera TUDO (No real, isso seria "SELECT * FROM table")
   let allData = generateAllData()
 
-  // 2. FILTRAGEM (WHERE)
-  const search = params.search?.toLowerCase()
+  // --- CORREÇÃO DO "0": Tratamento robusto de string ---
+  const search = (params.search || '').toLowerCase()
 
   if (search) {
     allData = allData.filter(
@@ -43,31 +40,55 @@ export async function getApplications(
     )
   }
 
-  // 2.1 Filtros por Coluna (Ex: ?application=App 10)
+  // Filtros por Coluna
   Object.keys(params).forEach((key) => {
-    if (['page', 'limit', 'search'].includes(key)) return // Ignora params de controle
+    if (['page', 'limit', 'search', 'sort', 'order'].includes(key)) return
 
+    // Garante que "0" seja lido como string "0" e não ignorado
     const value = params[key]?.toString().toLowerCase()
-    if (value) {
+
+    // Verificação explicita: se value for string vazia, ignora. Se for "0", processa.
+    if (value !== undefined && value !== '') {
       allData = allData.filter((item) => {
-        // Lógica simplificada de filtro por coluna
         const itemValue = String((item as any)[key] || '').toLowerCase()
         return itemValue.includes(value)
       })
     }
   })
 
-  // 3. PAGINAÇÃO (LIMIT / OFFSET)
+  // --- CORREÇÃO 3: Lógica de Sorting ---
+  const sortCol = params.sort as keyof Application
+  const sortOrder = params.order === 'desc' ? -1 : 1
+
+  if (sortCol) {
+    allData.sort((a, b) => {
+      const valA = a[sortCol]
+      const valB = b[sortCol]
+
+      // Tratamento para números e strings
+      if (typeof valA === 'number' && typeof valB === 'number') {
+        return (valA - valB) * sortOrder
+      }
+
+      // Tratamento genérico para strings
+      const strA = String(valA).toLowerCase()
+      const strB = String(valB).toLowerCase()
+
+      if (strA < strB) return -1 * sortOrder
+      if (strA > strB) return 1 * sortOrder
+      return 0
+    })
+  }
+
+  // Paginação
   const page = Number(params.page || '1')
   const limit = Number(params.limit || '100')
   const startIndex = (page - 1) * limit
   const endIndex = startIndex + limit
 
-  // 4. METADADOS
   const totalRows = allData.length
   const pageCount = Math.ceil(totalRows / limit)
 
-  // 5. FATIAMENTO (Retorna só a página atual)
   const slicedData = allData.slice(startIndex, endIndex)
 
   return {

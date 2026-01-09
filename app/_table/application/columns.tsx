@@ -67,8 +67,24 @@ function IndeterminateCheckbox({
 
 const numberEqualsFilterFn: FilterFn<any> = (row, columnId, filterValue) => {
   const rowValue: number = row.getValue(columnId)
-  // Ensure both are treated as strings for simple comparison, or handle number comparison explicitly
   return rowValue.toString() === filterValue.toString()
+}
+
+const formatUSDateTime = (dateString: string, includeTime: boolean = false) => {
+  if (!dateString) return '-'
+
+  const date = new Date(dateString)
+
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    ...(includeTime && {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }),
+  }).format(date)
 }
 
 export const applicationColumns: ColumnDef<Application>[] = [
@@ -97,7 +113,7 @@ export const applicationColumns: ColumnDef<Application>[] = [
         />
       </div>
     ),
-    size: 40,
+    size: 60,
   },
   {
     accessorKey: 'application',
@@ -117,7 +133,9 @@ export const applicationColumns: ColumnDef<Application>[] = [
     header: 'Last Scan Date',
     size: 150,
     cell: ({ row }) => (
-      <span className='font-medium'>{row.original.lastScanDate}</span>
+      <span className='font-medium text-gray-700'>
+        {formatUSDateTime(row.original.lastScanDate, true)}
+      </span>
     ),
   },
   {
@@ -128,10 +146,7 @@ export const applicationColumns: ColumnDef<Application>[] = [
     cell: ({ row }) => {
       return (
         <div className='flex gap-2 w-full justify-between items-center'>
-          {' '}
-          {/* Melhorei o layout interno */}
           <span className='font-medium'>{assemblyDataOwnerCell(row)}</span>
-          {/* Botões alinhados à direita */}
           <div className='flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity'>
             <button className='text-blue-600 hover:bg-blue-50 p-1 rounded'>
               <LuPencil size={16} />
