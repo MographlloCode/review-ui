@@ -19,7 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@components/*": ["./components*"],
+      "@components/common": ["./components/common/index.ts"],
+      "@components/features": ["./components/features/index.ts"],
+      "@components/layout": ["./components/layout/index.ts"],
     }
   },
   "include": [
