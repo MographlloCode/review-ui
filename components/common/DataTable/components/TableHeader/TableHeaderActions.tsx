@@ -112,6 +112,7 @@ export function TableHeaderActions<TData, TValue>({
           ) : (
             <AnimatePresence>
               <motion.input
+                key={'header-input'}
                 type='text'
                 value={(column.getFilterValue() as string) ?? ''}
                 onChange={(e) => column.setFilterValue(e.target.value)}

@@ -47,6 +47,7 @@ export function TableColumnFilterCombo<TData, TValue>({
   return (
     <AnimatePresence>
       <motion.div
+        key={'colum-dropdown-filter'}
         className='relative w-full font-normal'
         ref={containerRef}
         initial={{ opacity: 0, y: -10 }}
